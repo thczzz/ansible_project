@@ -4,14 +4,14 @@
   gather_facts: no
   tasks:
     - name: Copy sql file to dbsrv
-      ansible.builtin.copy:
+      copy:
         src: files/db_backup.sql
         dest: /tmp/db_backup.sql
       tags:
         - deploy
 
     - name: Restoring DB
-      ansible.builtin.mysql_db:
+      mysql_db:
         name: accounts
         login_user: "{{ dbuser }}"
         login_password: "{{ dbpass }}"
@@ -21,4 +21,3 @@
         - Restart mysql
       tags:
         - deploy
-        

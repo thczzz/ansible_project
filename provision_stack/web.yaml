@@ -28,7 +28,7 @@
         - conf
 
     - name: Deploy web config file
-      ansible.builtin.template:
+      template:
         src: templates/nginxvpro.j2
         dest: /etc/nginx/sites-available/vproapp
       tags:

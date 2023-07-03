@@ -12,7 +12,7 @@
         update_cache: yes
 
     - name: Download Tomcat Tar Ball/Binaries
-      ansible.builtin.get_url:
+      get_url:
         url: "{{ tom_url }}"
         dest: /tmp/tomcat-8.tar.gz
     
@@ -33,7 +33,7 @@
         state: directory
 
     - name: Extract tomcat
-      ansible.builtin.unarchive:
+      unarchive:
         src: /tmp/tomcat-8.tar.gz
         dest: /tmp/tomcat8/
         remote_src: yes
@@ -44,7 +44,7 @@
         msg: "{{ unarchive_info.files[0].split('/')[0] }}"
 
     - name: Sync /tmp/tomcat8/tomcat_cont /usr/local/tomcat8
-      ansible.builtin.synchronize:
+      synchronize:
         src: "/tmp/tomcat8/{{ unarchive_info.files[0].split('/')[0] }}/"
         dest: /usr/local/tomcat8/
       delegate_to: "{{ inventory_hostname }}"
@@ -57,7 +57,7 @@
         recurse: yes
 
     - name: Start & Enable tomcat svc
-      ansible.builtin.service:
+      service:
         name: tomcat8
         state: started
         enabled: yes
@@ -71,7 +71,7 @@
         - deploy
 
     - name: Stop tomcat8 svc
-      ansible.builtin.service:
+      service:
         name: tomcat8
         state: stopped
       tags:
@@ -80,7 +80,7 @@
     - name: Try Backup and Deploy
       block:
         - name: Archive ROOT dir with timestamp
-          ansible.builtin.archive:
+          archive:
             path: /usr/local/tomcat8/webapps/ROOT
             dest: "/opt/ROOT_{{ timestamp }}.tgz"
           when: artifact_stat.exists
@@ -133,13 +133,13 @@
         - deploy
 
     - name: Wait until ROOT.war is extracted to ROOT directory
-      ansible.builtin.wait_for:
+      wait_for:
         path: /usr/local/tomcat8/webapps/ROOT
       tags:
         - deploy
     
     - name: Deploy web configuration file
-      ansible.builtin.template:
+      template:
         src: templates/application.j2
         dest: /usr/local/tomcat8/webapps/ROOT/WEB-INF/classes/application.properties
         force: yes

@@ -10,7 +10,7 @@
         - package
 
     - name: Add and Erlang Solution public Key
-      ansible.builtin.apt_key:
+      apt_key:
         url: https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc
         state: present
       tags:

@@ -4,7 +4,7 @@
   gather_facts: no
   tasks:
     - name: Install MySql Service and dependencied
-      ansible.builtin.package:
+      package:
         name: "{{ item }}"
         state: present
         update_cache: yes
@@ -20,7 +20,7 @@
         - package
 
     - name: Start and enable MySql service
-      ansible.builtin.service:
+      service:
         name: mysql
         state: started
         enabled: yes
@@ -28,7 +28,7 @@
         - svc
 
     - name: Create mysql user
-      ansible.builtin.mysql_user:
+      mysql_user:
         name: "{{ dbuser }}"
         password: "{{ dbpass }}"
         priv: '*.*:ALL'
@@ -36,12 +36,12 @@
         state: present
 
     - name: Create accounts DB table
-      ansible.builtin.mysql_db:
+      mysql_db:
         name: "{{ dbname }}"
         state: present
 
     - name: Enable remote login to mysql svc
-      ansible.builtin.lineinfile:
+      lineinfile:
         path: /etc/mysql/mysql.conf.d/mysqld.cnf
         regexp: '^bind-address'
         line: 'bind-address = 0.0.0.0'
@@ -53,7 +53,7 @@
 
   handlers:
     - name: Restart mysql
-      ansible.builtin.service:
+      service:
         name: mysql
         state: restarted
   

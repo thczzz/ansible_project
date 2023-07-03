@@ -21,7 +21,7 @@
       register: git_status
 
     - name: mvn install command to build artifact
-      ansible.builtin.command: "mvn install"
+      command: "mvn install"
       args:
         chdir: Vprofile-repo
       when: git_status.changed

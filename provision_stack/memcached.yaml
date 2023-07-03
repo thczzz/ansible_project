@@ -4,7 +4,7 @@
   gather_facts: no
   tasks:
     - name: Install Memcached
-      ansible.builtin.package:
+      package:
         name: "memcached"
         state: present
         update_cache: yes
@@ -13,7 +13,7 @@
         - package
 
     - name: Start and enable Memcached service
-      ansible.builtin.service:
+      service:
         name: memcached
         state: started
         enabled: yes
@@ -21,7 +21,7 @@
         - svc
 
     - name: Enable remote login to memcached
-      ansible.builtin.lineinfile:
+      lineinfile:
         path: /etc/memcached.conf
         regexp: '^-l'
         line: '-l 0.0.0.0'
@@ -33,8 +33,7 @@
 
   handlers:
     - name: Restart memcached
-      ansible.builtin.service:
+      service:
         name: memcached
         state: restarted
 
-        

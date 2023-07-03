@@ -2,10 +2,10 @@
   hosts: all
   tasks:
     - name: Import Hosts IPs variables
-      ansible.builtin.include_vars: group_vars/hostsip
+      include_vars: group_vars/hostsip
 
     - name: Update hosts file for all the hosts
-      ansible.builtin.blockinfile:
+      blockinfile:
         path: /etc/hosts
         block: |
           {{ web01_ip }} web01
