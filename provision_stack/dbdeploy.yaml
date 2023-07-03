@@ -21,3 +21,9 @@
         - Restart mysql
       tags:
         - deploy
+
+  handlers:
+    - name: Restart mysql
+      service:
+        name: mysql
+        state: restarted
