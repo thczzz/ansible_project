@@ -151,8 +151,12 @@
         vpc_subnet_id: "{{ privsub1_id }}"
       register: db01_out
 
+    - name: List all EC2 instances
+      ec2_instance_info:
+      register: result
+
     - debug:
-        var: db01_out
+        var: result
 
     - name: Create ELB
       local_action:
