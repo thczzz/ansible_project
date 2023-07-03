@@ -153,12 +153,12 @@
 
     - name: List all EC2 instances
       ec2_instance_info:
-        names:
-          - web01
-          - app01
-          - rmq01
-          - mc01
-          - db01
+        filters:
+          "tag:Name": web01
+          "tag:Name": app01
+          "tag:Name": rmq01
+          "tag:Name": mc01
+          "tag:Name": db01
       register: instances_out
 
     # - debug:
