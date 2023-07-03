@@ -151,18 +151,35 @@
         vpc_subnet_id: "{{ privsub1_id }}"
       register: db01_out
 
-    - name: List all EC2 instances
+    - name: Get web01 info
       ec2_instance_info:
         filters:
           "tag:Name": web01
-          "tag:Name": app01
-          "tag:Name": rmq01
-          "tag:Name": mc01
-          "tag:Name": db01
-      register: instances_out
+      register: web01_out
 
-    - debug:
-        var: instances_out
+    - name: Get app01 info
+      ec2_instance_info:
+        filters:
+          "tag:Name": app01
+      register: app01_out
+
+    - name: Get rmq01 info
+      ec2_instance_info:
+        filters:
+          "tag:Name": rmq01
+      register: rmq01_out
+
+    - name: Get mc01 info
+      ec2_instance_info:
+        filters:
+          "tag:Name": mc01
+      register: mc01_out
+
+    - name: Get db01 info
+      ec2_instance_info:
+        filters:
+          "tag:Name": db01
+      register: db01_out     
 
     - name: Create ELB
       local_action:
@@ -171,7 +188,7 @@
         region: "{{ region }}"
         state: present
         instance_ids:
-          - "{{ instances_out.instances[0].instance_id }}"
+          - "{{ web01_out.instances[0].instance_id }}"
         purge_instance_ids: true
         security_group_ids: ["{{ vproELBSG_out.group_id }}"]
         subnets:
@@ -187,11 +204,11 @@
       ansible.builtin.blockinfile:
         path: provision_stack/group_vars/hostsip
         block: |
-          web01_ip: {{ instances_out.instances[0].instance_id }}
-          app01_ip: {{ instances_out.instances[1].instance_id }}
-          rmq01_ip: {{ instances_out.instances[2].instance_id }}
-          mc01_ip:  {{ instances_out.instances[3].instance_id }}
-          db01_ip:  {{ instances_out.instances[4].instance_id }}
+          web01_ip: {{ web01_out.instances[0].network_interfaces[0].private_ip_address }}
+          app01_ip: {{ app01_out.instances[0].network_interfaces[0].private_ip_address }}
+          rmq01_ip: {{ rmq01_out.instances[0].network_interfaces[0].private_ip_address }}
+          mc01_ip:  {{ mc01_out.instances[0].network_interfaces[0].private_ip_address }}
+          db01_ip:  {{ db01_out.instances[0].network_interfaces[0].private_ip_address }}
     
     - name: Copy login key to provision_stack dir
       ansible.builtin.copy:
@@ -203,11 +220,11 @@
       ansible.builtin.blockinfile:
         path: provision_stack/inventory-vpro
         block: |
-          web01 ansible_host={{ instances_out.instances[0].instance_id }}
-          app01 ansible_host={{ instances_out.instances[1].instance_id }}
-          rmq01 ansible_host={{ instances_out.instances[2].instance_id }}
-          mc01_ip ansible_host={{ instances_out.instances[3].instance_id }}
-          db01_ip ansible_host={{ instances_out.instances[4].instance_id }}
+          web01 ansible_host={{ web01_out.instances[0].network_interfaces[0].private_ip_address }}
+          app01 ansible_host={{ app01_out.instances[0].network_interfaces[0].private_ip_address }}
+          rmq01 ansible_host={{ rmq01_out.instances[0].network_interfaces[0].private_ip_address }}
+          mc01  ansible_host={{ mc01_out.instances[0].network_interfaces[0].private_ip_address }}
+          db01  ansible_host={{ db01_out.instances[0].network_interfaces[0].private_ip_address }}
           cntl ansible_host=127.0.0.1 ansible_connection=local
 
           [websrvgrp]
