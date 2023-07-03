@@ -1,24 +1,24 @@
 ---
 # Build Artifact ROOT.war & SQL file to be copied in files/ directory
-- ansible.builtin.import_playbook: build.yaml
+- import_playbook: build.yaml
 
 # Set Hosts to IP Mapping in /etc/hosts file of all servers
-- ansible.builtin.import_playbook: set_host_ip_map.yaml
+- import_playbook: set_host_ip_map.yaml
 
 # Setup DB server
-- ansible.builtin.import_playbook: db.yaml
+- import_playbook: db.yaml
 
 # Deploy SQL file on Dbserver
-- ansible.builtin.import_playbook: dbdeploy.yaml
+- import_playbook: dbdeploy.yaml
 
 # Setup Memcached service
-- ansible.builtin.import_playbook: memcached.yaml
+- import_playbook: memcached.yaml
 
 # Setup RabbitMq service
-- ansible.builtin.import_playbook: rabbitmq.yaml
+- import_playbook: rabbitmq.yaml
 
 # Setup Tomcat application server
-- ansible.builtin.import_playbook: appserver.yaml
+- import_playbook: appserver.yaml
 
 # Setup Nginx webserver
-- ansible.builtin.import_playbook: web.yaml
+- import_playbook: web.yaml
