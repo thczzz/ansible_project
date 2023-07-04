@@ -12,11 +12,12 @@
         enabled: yes
       tags:
         - svc
+      register: rabbitmq_out
 
     - name: Config setup
       copy:
         content: |
-          [{rabbit, [{loopback_users, []}]}]
+          [{rabbit, [{loopback_users, []}]}].
         dest: /etc/rabbitmq/rabbitmq.config
       notify:
         - Restart RMQ
@@ -35,6 +36,8 @@
         - Restart RMQ
       tags:
         - conf
+      when: rabbitmq_out.changed
+      # todo when: rabbitmq_installed == true
 
     - name: Enable the rabbitmq_management plugin
       rabbitmq_plugin:
