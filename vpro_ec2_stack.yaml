@@ -179,7 +179,13 @@
       ec2_instance_info:
         filters:
           "tag:Name": db01
-      register: db01_out     
+      register: db01_out   
+
+    - name: Get bastion_host info
+      ec2_instance_info:
+        filters:
+          "tag:Name": Bastion_host
+      register: bastion_host_out
 
     - name: Create ELB
       local_action:
@@ -204,11 +210,11 @@
       ansible.builtin.blockinfile:
         path: provision_stack/group_vars/hostsip
         block: |
-          web01_ip: {{ web01_out.instances[0].network_interfaces[0].private_ip_address }}
-          app01_ip: {{ app01_out.instances[0].network_interfaces[0].private_ip_address }}
-          rmq01_ip: {{ rmq01_out.instances[0].network_interfaces[0].private_ip_address }}
-          mc01_ip:  {{ mc01_out.instances[0].network_interfaces[0].private_ip_address }}
-          db01_ip:  {{ db01_out.instances[0].network_interfaces[0].private_ip_address }}
+          web01_ip: {{ web01_out.instances[0].private_ip_address }}
+          app01_ip: {{ app01_out.instances[0].private_ip_address }}
+          rmq01_ip: {{ rmq01_out.instances[0].private_ip_address }}
+          mc01_ip:  {{ mc01_out.instances[0].private_ip_address }}
+          db01_ip:  {{ db01_out.instances[0].private_ip_address }}
     
     - name: Copy login key to provision_stack dir
       ansible.builtin.copy:
@@ -220,11 +226,12 @@
       ansible.builtin.blockinfile:
         path: provision_stack/inventory-vpro
         block: |
-          web01 ansible_host={{ web01_out.instances[0].network_interfaces[0].private_ip_address }}
-          app01 ansible_host={{ app01_out.instances[0].network_interfaces[0].private_ip_address }}
-          rmq01 ansible_host={{ rmq01_out.instances[0].network_interfaces[0].private_ip_address }}
-          mc01  ansible_host={{ mc01_out.instances[0].network_interfaces[0].private_ip_address }}
-          db01  ansible_host={{ db01_out.instances[0].network_interfaces[0].private_ip_address }}
+          bastion ansible_host={{ bastion_host_out.instances[0].public_ip_address }} ansible_user=ubuntu ansible_ssh_private_key_file=bastion-key.pem
+          web01 ansible_host={{ web01_out.instances[0].private_ip_address }}
+          app01 ansible_host={{ app01_out.instances[0].private_ip_address }}
+          rmq01 ansible_host={{ rmq01_out.instances[0].private_ip_address }}
+          mc01  ansible_host={{ mc01_out.instances[0].private_ip_address }}
+          db01  ansible_host={{ db01_out.instances[0].private_ip_address }}
           cntl ansible_host=127.0.0.1 ansible_connection=local
 
           [websrvgrp]
@@ -256,3 +263,9 @@
           ansible_user=ubuntu
           ansible_ssh_private_key_file=loginkey_vpro.pem
           #ansible_python_interpreter=/usr/bin/python3
+
+    - name: Add Inventory file inventory-bastion
+      ansible.builtin.blockinfile:
+        path: ./inventory-bastion
+        block: |
+          bastion ansible_host={{ bastion_host_out.instances[0].public_ip_address }} ansible_user=ubuntu ansible_ssh_private_key_file=bastion-key.pem

@@ -1,0 +1,61 @@
+---
+- name: Setup Bastion Host
+  hosts: bastion
+  gather_facts: no
+  tasks:
+    - name: Install dependencies
+      package:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+        cache_valid_time: 86400
+      loop:
+        - git
+        - ansible
+        - python3-boto3
+        - python3-botocore
+        - python3-boto
+      tags:
+        - package
+
+    - file:
+        path: ansible_project
+        state: directory
+
+    - name: Clone source code from github
+      git:
+        repo: 'https://github.com/thczzz/ansible_project.git'
+        dest: ./ansible_project
+        version: master
+      register: git_status
+
+    - name: Copy key to bastion
+      copy:
+        src: ./loginkey_vpro.pem
+        dest: ansible_project/provision_stack/loginkey_vpro.pem
+        mode: 0400
+
+    - name: Delete inventory-vpro (for replacement)
+      file:
+        path: ansible_project/provision_stack/inventory-vpro
+        state: absent
+
+    - name: Copy inventory-vpro to bastion
+      copy:
+        src: provision_stack/inventory-vpro
+        dest: ansible_project/provision_stack/inventory-vpro
+
+    - name: Delete hostsip (for replacement)
+      file:
+        path: ansible_project/provision_stack/group_vars/hostsip
+        state: absent
+
+    - name: Copy hostsip to bastion
+      copy:
+        src: provision_stack/group_vars/hostsip
+        dest: ansible_project/provision_stack/group_vars/hostsip
+    
+    - name: Run Playbook
+      command: "ansible-playbook -vvvv site.yaml"
+      args:
+        chdir: ansible_project/provision_stack
