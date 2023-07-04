@@ -62,8 +62,8 @@
         dest: ansible_project/provision_stack/group_vars/hostsip
       when: git_out.changed
     
-    - name: Run Playbook
-      command: "ansible-playbook -v site.yaml"
-      args:
-        chdir: ansible_project/provision_stack
-      when: git_out.changed
+    # - name: Run Playbook
+    #   command: "ansible-playbook -v site.yaml"
+    #   args:
+    #     chdir: ansible_project/provision_stack
+    #   when: git_out.changed
