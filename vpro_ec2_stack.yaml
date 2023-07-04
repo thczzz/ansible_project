@@ -153,36 +153,42 @@
 
     - name: Get web01 info
       ec2_instance_info:
+        region: "{{ region }}"
         filters:
           "tag:Name": web01
       register: web01_out
 
     - name: Get app01 info
       ec2_instance_info:
+        region: "{{ region }}"
         filters:
           "tag:Name": app01
       register: app01_out
 
     - name: Get rmq01 info
       ec2_instance_info:
+        region: "{{ region }}"
         filters:
           "tag:Name": rmq01
       register: rmq01_out
 
     - name: Get mc01 info
       ec2_instance_info:
+        region: "{{ region }}"
         filters:
           "tag:Name": mc01
       register: mc01_out
 
     - name: Get db01 info
       ec2_instance_info:
+        region: "{{ region }}"
         filters:
           "tag:Name": db01
       register: db01_out   
 
     - name: Get bastion_host info
       ec2_instance_info:
+        region: "{{ region }}"
         filters:
           "tag:Name": Bastion_host
       register: bastion_host_out
