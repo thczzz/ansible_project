@@ -29,41 +29,41 @@
         dest: ./ansible_project
         version: master
       when: dir_status.changed
-      register: git_status
+      register: git_out
 
     - name: Copy key to bastion
       copy:
         src: ./loginkey_vpro.pem
         dest: ansible_project/provision_stack/loginkey_vpro.pem
         mode: 0400
-      when: git_status.changed
+      when: git_out.changed
 
     - name: Delete inventory-vpro (for replacement)
       file:
         path: ansible_project/provision_stack/inventory-vpro
         state: absent
-      when: git_status.changed
+      when: git_out.changed
 
     - name: Copy inventory-vpro to bastion
       copy:
         src: provision_stack/inventory-vpro
         dest: ansible_project/provision_stack/inventory-vpro
-      when: git_status.changed
+      when: git_out.changed
 
     - name: Delete hostsip (for replacement)
       file:
         path: ansible_project/provision_stack/group_vars/hostsip
         state: absent
-      when: git_status.changed
+      when: git_out.changed
 
     - name: Copy hostsip to bastion
       copy:
         src: provision_stack/group_vars/hostsip
         dest: ansible_project/provision_stack/group_vars/hostsip
-      when: git_status.changed
+      when: git_out.changed
     
     - name: Run Playbook
-      command: "ansible-playbook -vvvv site.yaml"
+      command: "ansible-playbook -v site.yaml"
       args:
         chdir: ansible_project/provision_stack
-      when: git_status.changed
+      when: git_out.changed
