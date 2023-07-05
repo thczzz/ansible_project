@@ -7,8 +7,10 @@
       copy:
         src: files/db_backup.sql
         dest: /tmp/db_backup.sql
+        force: false
       tags:
         - deploy
+      register: backup_out
 
     - name: Restoring DB
       mysql_db:
@@ -21,6 +23,7 @@
         - Restart mysql
       tags:
         - deploy
+      when: backup_out.changed
 
   handlers:
     - name: Restart mysql

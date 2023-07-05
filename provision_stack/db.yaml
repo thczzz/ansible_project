@@ -18,6 +18,7 @@
       ignore_errors: yes
       tags:
         - package
+      register: mysql_out
 
     - name: Start and enable MySql service
       service:
@@ -34,11 +35,13 @@
         priv: '*.*:ALL'
         host: '%'
         state: present
+      when: mysql_out.changed
 
     - name: Create accounts DB table
       mysql_db:
         name: "{{ dbname }}"
         state: present
+      when: mysql_out.changed
 
     - name: Enable remote login to mysql svc
       lineinfile:
