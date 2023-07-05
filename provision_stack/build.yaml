@@ -3,6 +3,12 @@
   connection: local
   become: yes
   tasks:
+    - name: uninstall jdk 11
+      apt:
+        name: openjdk-11-jdk
+        state: absent
+        update_cache: yes
+
     - name: Install jdk, maven, git
       apt:
         name: "{{ item }}"
@@ -10,14 +16,20 @@
         update_cache: yes
       loop:
         - git
-        - openjdk-11-jdk
+        - openjdk-8-jdk
         - maven
+
+    - file:
+        path: ansible_project/provision_stack/Vprofile-repo
+        state: directory
+      register: vprofile_out
 
     - name: Clone source code from github
       git:
         repo: 'https://github.com/devopshydclub/vprofile-project.git'
         dest: ./Vprofile-repo
         version: vp-rem
+      when: vprofile_out.changed
       register: git_status
 
     - name: mvn install command to build artifact
