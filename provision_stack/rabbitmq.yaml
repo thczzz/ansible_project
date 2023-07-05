@@ -4,6 +4,10 @@
   gather_facts: no
 
   tasks:
+    - name: Check if erlang is installed
+      command: dpkg-query -l erlang
+      register: erlang_check
+
     - name: Install erlang on ubuntu 20.04
       shell: |
         sudo apt update
@@ -12,6 +16,11 @@
         echo "deb https://packages.erlang-solutions.com/ubuntu $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/erlang.list
         sudo apt update
         sudo apt install erlang -y
+      when: erlang_check is failed
+
+    - name: Check if rabbitmq is installed
+      command: dpkg-query -l rabbitmq-server
+      register: rabbitmq_check
 
     - name: Install RabbitMq
       shell: |
@@ -19,6 +28,7 @@
         sudo apt update
         sudo apt install rabbitmq-server -y
       register: rabbitmq_out
+      when: rabbitmq_check is failed
 
     - name: Start & Enable RMQ
       service:

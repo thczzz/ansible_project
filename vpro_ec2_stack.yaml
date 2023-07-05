@@ -156,13 +156,19 @@
         region: "{{ region }}"
         filters:
           "tag:Name": web01
+          instance-state-name: [ "running"]
       register: web01_out
+
+    - name: asd
+      debug:
+        var: web01_out
 
     - name: Get app01 info
       ec2_instance_info:
         region: "{{ region }}"
         filters:
           "tag:Name": app01
+          instance-state-name: [ "running"]
       register: app01_out
 
     - name: Get rmq01 info
@@ -170,6 +176,7 @@
         region: "{{ region }}"
         filters:
           "tag:Name": rmq01
+          instance-state-name: [ "running"]
       register: rmq01_out
 
     - name: Get mc01 info
@@ -177,6 +184,7 @@
         region: "{{ region }}"
         filters:
           "tag:Name": mc01
+          instance-state-name: [ "running"]
       register: mc01_out
 
     - name: Get db01 info
@@ -184,6 +192,7 @@
         region: "{{ region }}"
         filters:
           "tag:Name": db01
+          instance-state-name: [ "running"]
       register: db01_out   
 
     - name: Get bastion_host info
@@ -191,6 +200,7 @@
         region: "{{ region }}"
         filters:
           "tag:Name": Bastion_host
+          instance-state-name: [ "running"]
       register: bastion_host_out
 
     - name: Create ELB
@@ -282,4 +292,9 @@
         mode: 311
         content: |
           #!/bin/bash
-          ssh -o StrictHostKeyChecking=no -i ./bastion-key.pem ubuntu@{{ bastion_host_out.instances[0].public_ip_address }} 'cd ansible_project/provision_stack && echo "executing ansible-playbook" && ansible-playbook site.yaml && exit 0 && exit; exec bash -le'
+          function cleanup() {
+            echo "Exiting..."
+          }
+          cd provision_stack && sudo ansible-playbook build.yaml
+          sudo ssh -o StrictHostKeyChecking=no -i ../bastion-key.pem ubuntu@{{ bastion_host_out.instances[0].public_ip_address }} 'cd ansible_project/provision_stack && echo "executing ansible-playbook" && sudo ansible-playbook site.yaml && exit 0 && exit; exec bash -le'
+          trap 'trap SIGINT; kill -s SIGINT "$$"' SIGINT; trap cleanup EXIT

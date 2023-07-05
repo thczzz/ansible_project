@@ -70,7 +70,7 @@
 
     - name: Start & Enable tomcat svc
       service:
-        name: tomcat8
+        name: tomcat
         state: started
         enabled: yes
       tags:
@@ -84,7 +84,7 @@
 
     - name: Stop tomcat8 svc
       service:
-        name: tomcat8
+        name: tomcat
         state: stopped
       tags:
         - deploy
@@ -95,7 +95,7 @@
           archive:
             path: /usr/local/tomcat8/webapps/ROOT
             dest: "/opt/ROOT_{{ timestamp }}.tgz"
-          when: artifact_stat.exists
+          when: artifact_stat.stat.exists
           register: archive_info
           tags:
             - deploy
@@ -133,12 +133,12 @@
       rescue:
         - name: Start tomcat8 svc
           service:
-            name: tomcat8
+            name: tomcat
             state: started
       
     - name: Start tomcat8 svc
       service:
-        name: tomcat8
+        name: tomcat
         state: started
       when: deploy_info.changed
       tags:
@@ -163,5 +163,5 @@
   handlers:
     - name: Restart Tomcat
       service:
-        name: tomcat8
+        name: tomcat
         state: restarted
