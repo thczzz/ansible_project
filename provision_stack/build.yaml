@@ -32,6 +32,12 @@
       when: vprofile_out.changed
       register: git_status
 
+    - name: Deploy web configuration file
+      template:
+        src: templates/application.j2
+        dest: Vprofile-repo/src/main/resources/application.properties
+        force: yes
+
     - name: mvn install command to build artifact
       command: "mvn install"
       args:
