@@ -1,0 +1,14 @@
+vpcid: vpc-0306995fe16882061
+pubsub1_id: subnet-0ebe650edf1ef5c68
+pubsub2_id: subnet-0a1f71fe7723d7594
+pubsub3_id: subnet-0ee5f6e12e36db98c
+privsub1_id: subnet-0b429635e79f60c33
+privsub2_id: subnet-0f600544d09f245ef
+privsub3_id: subnet-0338ad258431c0caa
+igw_id: igw-03b0f165deeff7342
+pubRT_id: rtb-09af9116131e4166a
+privRT_id: rtb-0c9e9a862d6edbaa5
+NATGW_id: nat-0422aafe1f5d4acc1
+# BEGIN ANSIBLE MANAGED BLOCK
+BastionSGid: sg-0cde2b638c9b1d593
+# END ANSIBLE MANAGED BLOCK
