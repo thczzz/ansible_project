@@ -282,5 +282,4 @@
         mode: 311
         content: |
           #!/bin/bash
-          ssh -o StrictHostKeyChecking=no -i ./bastion-key.pem ubuntu@{{ bastion_host_out.instances[0].public_ip_address }} 'cd ansible_project/provision_stack &&
-	        echo "executing ansible-playbook" && ansible-playbook site.yaml && exit 0 && exit; exec bash -le'
+          ssh -o StrictHostKeyChecking=no -i ./bastion-key.pem ubuntu@{{ bastion_host_out.instances[0].public_ip_address }} 'cd ansible_project/provision_stack && echo "executing ansible-playbook" && ansible-playbook site.yaml && exit 0 && exit; exec bash -le'
