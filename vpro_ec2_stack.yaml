@@ -16,7 +16,7 @@
         region: "{{ region }}"
       register: vprokey_out
 
-    - name: Stave private key into file loginkey_vpro.pem
+    - name: Save private key into file loginkey_vpro.pem
       copy:
         content: "{{ vprokey_out.key.private_key }}"
         dest: ./loginkey_vpro.pem
@@ -232,7 +232,6 @@
       ansible.builtin.blockinfile:
         path: provision_stack/inventory-vpro
         block: |
-          bastion ansible_host={{ bastion_host_out.instances[0].public_ip_address }} ansible_user=ubuntu ansible_ssh_private_key_file=bastion-key.pem
           web01 ansible_host={{ web01_out.instances[0].private_ip_address }}
           app01 ansible_host={{ app01_out.instances[0].private_ip_address }}
           rmq01 ansible_host={{ rmq01_out.instances[0].private_ip_address }}
@@ -275,3 +274,13 @@
         path: ./inventory-bastion
         block: |
           bastion ansible_host={{ bastion_host_out.instances[0].public_ip_address }} ansible_user=ubuntu ansible_ssh_private_key_file=bastion-key.pem
+
+    - name: Create bash script step 2
+      copy:
+        dest: ./script_part2.sh
+        force: true
+        mode: 311
+        content: |
+          #!/bin/bash
+          ssh -o StrictHostKeyChecking=no -i ./bastion-key.pem ubuntu@{{ bastion_host_out.instances[0].public_ip_address }} 'cd ansible_project/provision_stack &&
+	          echo "executing ansible-playbook" && ansible-playbook site.yaml && exit 0 && exit; exec bash -le'

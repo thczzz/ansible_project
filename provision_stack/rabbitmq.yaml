@@ -2,9 +2,24 @@
 - name: Install & Setup RabbitMq with user
   hosts: rmqsrvgrp
   gather_facts: no
-  roles:
-    - geerlingguy.rabbitmq
+
   tasks:
+    - name: Install erlang on ubuntu 20.04
+      shell: |
+        sudo apt update
+        sudo apt install curl software-properties-common apt-transport-https lsb-release -y
+        curl -fsSL https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/erlang.gpg
+        echo "deb https://packages.erlang-solutions.com/ubuntu $(lsb_release -cs) contrib" | sudo tee /etc/apt/sources.list.d/erlang.list
+        sudo apt update
+        sudo apt install erlang -y
+
+    - name: Install RabbitMq
+      shell: |
+        curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.deb.sh | sudo bash
+        sudo apt update
+        sudo apt install rabbitmq-server -y
+      register: rabbitmq_out
+
     - name: Start & Enable RMQ
       service:
         name: rabbitmq-server
@@ -12,7 +27,6 @@
         enabled: yes
       tags:
         - svc
-      register: rabbitmq_out
 
     - name: Config setup
       copy:
@@ -37,7 +51,6 @@
       tags:
         - conf
       when: rabbitmq_out.changed
-      # todo when: rabbitmq_installed == true
 
     - name: Enable the rabbitmq_management plugin
       rabbitmq_plugin:
@@ -47,6 +60,7 @@
         - Restart RMQ
       tags:
         - package
+      when: rabbitmq_out.changed
 
   handlers:
     - name: Restart RMQ
