@@ -4,6 +4,8 @@
   tasks:
     - name: Import Hosts IPs variables
       include_vars: group_vars/hostsip
+      timeout: 20
+      retries: 3
 
     - name: Update hosts file for all the hosts
       blockinfile:
@@ -14,4 +16,5 @@
           {{ rmq01_ip }} rmq01
           {{ mc01_ip }}  mc01
           {{ db01_ip }}  db01
-    
+      timeout: 30
+      retries: 3
