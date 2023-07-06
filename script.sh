@@ -2,7 +2,7 @@
 function cleanup() {
   echo "Exiting.."
 }
-ssh -o StrictHostKeyChecking=no -i ../../webserver.pem ubuntu@18.234.227.17 'cd ansible_project &&
+ssh -o StrictHostKeyChecking=no -i ../../webserver.pem ubuntu@54.161.139.188 'cd ansible_project &&
        sudo ansible-playbook site.yaml &&
        sudo ansible-playbook vpro_ec2_stack.yaml &&
        sudo ansible-playbook bastion_setup.yaml && 

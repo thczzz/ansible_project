@@ -97,6 +97,7 @@
         state: "{{ state }}"
         resource_tags:
           Name: vprofile_IGW
+      retries: 3
       register: igw_out
 
     - name: Set up public subnet route table

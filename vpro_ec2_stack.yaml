@@ -156,7 +156,7 @@
         region: "{{ region }}"
         filters:
           "tag:Name": web01
-          instance-state-name: [ "running"]
+          instance-state-name: [ "running", "pending"]
       register: web01_out
 
     - name: asd
@@ -168,7 +168,7 @@
         region: "{{ region }}"
         filters:
           "tag:Name": app01
-          instance-state-name: [ "running"]
+          instance-state-name: [ "running", "pending"]
       register: app01_out
 
     - name: Get rmq01 info
@@ -176,7 +176,7 @@
         region: "{{ region }}"
         filters:
           "tag:Name": rmq01
-          instance-state-name: [ "running"]
+          instance-state-name: [ "running", "pending"]
       register: rmq01_out
 
     - name: Get mc01 info
@@ -184,7 +184,7 @@
         region: "{{ region }}"
         filters:
           "tag:Name": mc01
-          instance-state-name: [ "running"]
+          instance-state-name: [ "running", "pending"]
       register: mc01_out
 
     - name: Get db01 info
@@ -192,7 +192,7 @@
         region: "{{ region }}"
         filters:
           "tag:Name": db01
-          instance-state-name: [ "running"]
+          instance-state-name: [ "running", "pending"]
       register: db01_out   
 
     - name: Get bastion_host info
@@ -200,7 +200,7 @@
         region: "{{ region }}"
         filters:
           "tag:Name": Bastion_host
-          instance-state-name: [ "running"]
+          instance-state-name: [ "running", "pending"]
       register: bastion_host_out
 
     - name: Create ELB
@@ -231,6 +231,7 @@
           rmq01_ip: {{ rmq01_out.instances[0].private_ip_address }}
           mc01_ip:  {{ mc01_out.instances[0].private_ip_address }}
           db01_ip:  {{ db01_out.instances[0].private_ip_address }}
+      retries: 3
     
     - name: Copy login key to provision_stack dir
       ansible.builtin.copy:
@@ -295,6 +296,5 @@
           function cleanup() {
             echo "Exiting..."
           }
-          cd provision_stack && sudo ansible-playbook build.yaml
-          sudo ssh -o StrictHostKeyChecking=no -i ../bastion-key.pem ubuntu@{{ bastion_host_out.instances[0].public_ip_address }} 'cd ansible_project/provision_stack && echo "executing ansible-playbook" && sudo ansible-playbook site.yaml && exit 0 && exit; exec bash -le'
+          sudo ssh -o StrictHostKeyChecking=no -i ./bastion-key.pem ubuntu@{{ bastion_host_out.instances[0].public_ip_address }} 'cd ansible_project/provision_stack && echo "executing ansible-playbook" && sudo ansible-playbook site.yaml && exit 0 && exit; exec bash -le'
           trap 'trap SIGINT; kill -s SIGINT "$$"' SIGINT; trap cleanup EXIT

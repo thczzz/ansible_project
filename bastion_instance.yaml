@@ -37,7 +37,7 @@
           - proto: tcp
             from_port: 22
             to_port: 22
-            cidr_ip: "18.234.227.17/32" # Allow SSH from controller EC2
+            cidr_ip: "54.161.139.188/32" # Allow SSH from controller EC2
       register: BastionSG_out
 
     - name: Creating Bastion Host
