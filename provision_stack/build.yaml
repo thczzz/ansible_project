@@ -26,7 +26,7 @@
 
     - name: Clone source code from github
       git:
-        repo: 'https://github.com/devopshydclub/vprofile-project.git'
+        repo: 'https://github.com/thczzz/vprofile-project.git'
         dest: ./Vprofile-repo
         version: vp-rem
       when: vprofile_out.changed
@@ -42,7 +42,7 @@
       command: "mvn install"
       args:
         chdir: Vprofile-repo
-      when: git_status.changed
+      # when: vprofile_out.changed
       register: mvn_info
 
     - name: Copy artifacts to files directory
