@@ -7,6 +7,7 @@
     - name: Check if erlang is installed
       command: dpkg-query -l erlang
       register: erlang_check
+      ignore_errors: true
 
     - name: Install erlang on ubuntu 20.04
       shell: |
@@ -21,6 +22,7 @@
     - name: Check if rabbitmq is installed
       command: dpkg-query -l rabbitmq-server
       register: rabbitmq_check
+      ignore_errors: true
 
     - name: Install RabbitMq
       shell: |

@@ -1,5 +1,6 @@
 - name: Set host to ip mapping in /etc/hosts file of all the instances in the stack
   hosts: all
+  gather_facts: false
   tasks:
     - name: Import Hosts IPs variables
       include_vars: group_vars/hostsip
